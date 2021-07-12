@@ -1,4 +1,5 @@
 const baseUrl = 'https://api.mercadolibre.com/sites/MLB/';
+const productUrl = 'https://api.mercadolibre.com/items/';
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -21,26 +22,39 @@ function createProductItemElement({ id: sku, title: name, thumbnail: image }) {
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
-  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
+
+  const button = createCustomElement('button', 'item__add', 'Adicionar ao carrinho!');
+
+  button.addEventListener('click',async (event) => {
+
+    const response = await fetch(`${productUrl}/${sku}`);
+    const product = await response.json();
+    console.table(Object.entries(product));
+    const listItem = createCartItemElement(product);
+    document.querySelector('.cart__items').appendChild(listItem);
+    // event.target.parentElement;
+  });
+
+  section.appendChild(button);
 
   return section;
 }
 
-// function getSkuFromProductItem(item) {
-//   return item.querySelector('span.item__sku').innerText;
-// }
+function getSkuFromProductItem(item) {
+  return item.querySelector('span.item__sku').innerText;
+}
 
-// function cartItemClickListener(event) {
-//   // coloque seu código aqui
-// }
+function cartItemClickListener(event) {
+  // coloque seu código aqui
+}
 
-// function createCartItemElement({ sku, name, salePrice }) {
-//   const li = document.createElement('li');
-//   li.className = 'cart__item';
-//   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-//   li.addEventListener('click', cartItemClickListener);
-//   return li;
-// }
+function createCartItemElement({ id: sku, title: name, price: salePrice }) {
+  const li = document.createElement('li');
+  li.className = 'cart__item';
+  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+  li.addEventListener('click', cartItemClickListener);
+  return li;
+}
 
 async function getProducts() {
   const response = await fetch(`${baseUrl}/search?q=computador`);
@@ -52,15 +66,17 @@ async function getProducts() {
 //
 // }
 
+const addToCart = () => document.querySelector('.cart').appendChild(this);
+
 window.onload = async () => {
   const products = await getProducts();
-  console.log(products.results);
+  // console.log(products.results);
+  const items = document.querySelector('.items');
   products.results.forEach((product) => {
     const element = createProductItemElement(product);
-    const items = document.querySelector('.items');
-    const addButton = document.createElement('button');
-    element.children[3].innerHTML = addButton;
+    // const addButton = document.createElement('button');
+    // element.children[3].innerHTML = addButton;
     items.appendChild(element);
-    console.log(element.children);
+    // console.log(element.children[3].innerText);
   });
 };
