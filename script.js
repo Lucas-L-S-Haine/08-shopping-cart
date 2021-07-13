@@ -22,20 +22,7 @@ function createProductItemElement({ id: sku, title: name, thumbnail: image }) {
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
-
-  const button = createCustomElement('button', 'item__add', 'Adicionar ao carrinho!');
-
-  button.addEventListener('click',async (event) => {
-
-    const response = await fetch(`${productUrl}/${sku}`);
-    const product = await response.json();
-    console.table(Object.entries(product));
-    const listItem = createCartItemElement(product);
-    document.querySelector('.cart__items').appendChild(listItem);
-    // event.target.parentElement;
-  });
-
-  section.appendChild(button);
+  section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'));
 
   return section;
 }
@@ -45,7 +32,7 @@ function getSkuFromProductItem(item) {
 }
 
 function cartItemClickListener(event) {
-  // coloque seu código aqui
+  console.log(event.target.parentNode);
 }
 
 function createCartItemElement({ id: sku, title: name, price: salePrice }) {
@@ -66,17 +53,25 @@ async function getProducts() {
 //
 // }
 
-const addToCart = () => document.querySelector('.cart').appendChild(this);
+// const addToCart = () => document.querySelector('.cart').appendChild(this);
+
+const productButton = async (event) => {
+  const sku = getSkuFromProductItem(event.target.parentNode);
+  const response = await fetch(`${productUrl}/${sku}`);
+  const product = await response.json();
+  // console.table(Object.entries(product));
+  const listItem = createCartItemElement(product);
+  document.querySelector('.cart__items').appendChild(listItem);
+};
 
 window.onload = async () => {
   const products = await getProducts();
-  // console.log(products.results);
   const items = document.querySelector('.items');
   products.results.forEach((product) => {
     const element = createProductItemElement(product);
-    // const addButton = document.createElement('button');
-    // element.children[3].innerHTML = addButton;
     items.appendChild(element);
-    // console.log(element.children[3].innerText);
+  });
+  items.querySelectorAll('button.item__add').forEach((button) => {
+    button.addEventListener('click', productButton);
   });
 };
