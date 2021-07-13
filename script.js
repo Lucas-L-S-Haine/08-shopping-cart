@@ -1,5 +1,5 @@
-const baseUrl = 'https://api.mercadolibre.com/sites/MLB/';
-const productUrl = 'https://api.mercadolibre.com/items/';
+const baseUrl = 'https://api.mercadolibre.com/sites/MLB';
+const productUrl = 'https://api.mercadolibre.com/items';
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -58,6 +58,8 @@ async function getProducts() {
 
 const productButton = async (event) => {
   const sku = getSkuFromProductItem(event.target.parentNode);
+  console.log(event.target.parentNode);
+  console.log(sku);
   const response = await fetch(`${productUrl}/${sku}`);
   const product = await response.json();
   // console.table(Object.entries(product));
