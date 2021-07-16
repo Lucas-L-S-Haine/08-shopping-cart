@@ -63,21 +63,31 @@ const productButton = async (event) => {
   const product = await response.json();
   const listItem = createCartItemElement(product);
   document.querySelector('.cart__items').appendChild(listItem);
+  // cart.appendChild(listItem);
   localStorage[sku] = JSON.stringify(listItem.innerHTML);
 };
 
 function loadShoppingCart() {
   const storageKeys = Object.keys(localStorage);
-  const cart = document.querySelector('.cart__items');
+  const shoppingCart = document.querySelector('ol.cart__items');
   storageKeys.forEach((key) => {
     const itemDescription = JSON.parse(localStorage[key]);
     const item = document.createElement('li');
     item.innerHTML = itemDescription;
-    cart.appendChild(item);
+    shoppingCart.appendChild(item);
   });
 }
 
+function emptyCart() {
+  const cart = document.querySelector('.cart__items');
+  const size = cart.children.length;
+  for (let index = size - 1; index >= 0; index -= 1) cart.removeChild(cart.children[index]);
+  localStorage.clear();
+}
+
 window.onload = async () => {
+  const cleanCartButton = document.querySelector('button.empty-cart');
+  cleanCartButton.addEventListener('click', emptyCart);
   loadShoppingCart();
   const products = await getProducts();
   const items = document.querySelector('.items');
