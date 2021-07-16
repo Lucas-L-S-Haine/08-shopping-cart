@@ -74,7 +74,7 @@ function loadShoppingCart() {
     const item = document.createElement('li');
     item.innerHTML = itemDescription;
     cart.appendChild(item);
-  })
+  });
 }
 
 window.onload = async () => {
