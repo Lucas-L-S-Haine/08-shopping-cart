@@ -33,6 +33,7 @@ function getSkuFromProductItem(item) {
 
 function cartItemClickListener(event) {
   const cartItem = event.target;
+  console.log(cartItem);
   cartItem.parentNode.removeChild(cartItem);
 }
 
@@ -58,16 +59,26 @@ async function getProducts() {
 
 const productButton = async (event) => {
   const sku = getSkuFromProductItem(event.target.parentNode);
-  console.log(event.target.parentNode);
-  console.log(sku);
   const response = await fetch(`${productUrl}/${sku}`);
   const product = await response.json();
-  // console.table(Object.entries(product));
   const listItem = createCartItemElement(product);
   document.querySelector('.cart__items').appendChild(listItem);
+  localStorage[sku] = JSON.stringify(listItem.innerHTML);
 };
 
+function loadShoppingCart() {
+  const storageKeys = Object.keys(localStorage);
+  const cart = document.querySelector('.cart__items');
+  storageKeys.forEach((key) => {
+    const itemDescription = JSON.parse(localStorage[key]);
+    const item = document.createElement('li');
+    item.innerHTML = itemDescription;
+    cart.appendChild(item);
+  })
+}
+
 window.onload = async () => {
+  loadShoppingCart();
   const products = await getProducts();
   const items = document.querySelector('.items');
   products.results.forEach((product) => {
