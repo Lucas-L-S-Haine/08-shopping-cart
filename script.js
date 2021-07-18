@@ -33,8 +33,10 @@ function getSkuFromProductItem(item) {
 
 function cartItemClickListener(event) {
   const cartItem = event.target;
+  const cartItemList = cartItem.parentNode;
   console.log(cartItem);
-  cartItem.parentNode.removeChild(cartItem);
+  cartItemList.removeChild(cartItem);
+  localStorage.clear();
 }
 
 function createCartItemElement({ id: sku, title: name, price: salePrice }) {
@@ -46,6 +48,8 @@ function createCartItemElement({ id: sku, title: name, price: salePrice }) {
 }
 
 async function getProducts() {
+  setTimeout(() => document.querySelector('body')
+    .removeChild(document.querySelector('.loading')), 0);
   const response = await fetch(`${baseUrl}/search?q=computador`);
   const product = await response.json();
   return product;
@@ -85,7 +89,16 @@ function emptyCart() {
   localStorage.clear();
 }
 
+// const totalPrice = async () => {
+//   // o seu código aqui
+// };
+
 window.onload = async () => {
+  const loadingText = document.createElement('p');
+  loadingText.innerText = 'loading...';
+  loadingText.className = 'loading';
+  const body = document.querySelector('body');
+  body.appendChild(loadingText);
   const cleanCartButton = document.querySelector('button.empty-cart');
   cleanCartButton.addEventListener('click', emptyCart);
   loadShoppingCart();
